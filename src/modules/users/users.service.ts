@@ -23,20 +23,23 @@ export class UsersService {
         if (candidate) {
             throw new HttpException('User with this email exists!', HttpStatus.BAD_REQUEST);
         }
+
         const hashPassword = await bcrypt.hash(dto.password, 5);
         const user = await this.userRepository.create({...dto, password: hashPassword});
-
         const role = await this.roleService.getRoleByValue("USER");
         await user.$set("roles", [role.id]);
         user.roles = [role];
+
         return user;
     }
 
     async getAllUsers() {
+
         return await this.userRepository.findAll({include: {all: true}});
     }
 
     async getUserByEmail(email: string) {
+
         return await this.userRepository.findOne({
             where: {email},
             include: {all: true},
@@ -46,14 +49,13 @@ export class UsersService {
     async addRole(dto: AddRoleDto) {
         const user = await this.userRepository.findByPk(dto.userId);
         const role = await this.roleService.getRoleByValue(dto.value);
-        if (role && user) {
-            await user.$add("role", role.id);
-            return dto;
+
+        if (!role || !user) {
+            throw new HttpException("User or a role not found!", HttpStatus.NOT_FOUND);
         }
-        throw new HttpException(
-            "Пользователь или роль не найдены",
-            HttpStatus.NOT_FOUND
-        );
+
+        await user.$add("role", role.id);
+        return dto;
     }
 
 

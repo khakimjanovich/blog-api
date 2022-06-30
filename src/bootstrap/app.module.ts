@@ -7,6 +7,9 @@ import {User} from "../modules/users/users.model";
 import {Role} from "../modules/roles/roles.model";
 import {UserRoles} from "../modules/roles/user-roles.model";
 import {AuthModule} from "../modules/auth/auth.module";
+import {Post} from "../modules/posts/posts.model";
+import {PostsModule} from "../modules/posts/posts.module";
+import {FilesModule} from "../modules/files/files.module";
 
 @Module({
     controllers: [],
@@ -22,12 +25,14 @@ import {AuthModule} from "../modules/auth/auth.module";
             database: process.env.DB_DATABASE,
             username: process.env.DB_USERNAME,
             password: process.env.DB_PASSWORD,
-            models: [User, Role, UserRoles],
+            models: [User, Role, UserRoles, Post],
             autoLoadModels: true,
         }),
         UsersModule,
         RolesModule,
         AuthModule,
+        PostsModule,
+        FilesModule,
     ],
     exports: [],
 })

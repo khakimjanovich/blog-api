@@ -14,6 +14,7 @@ export class AuthService {
 
     async login(userDto: CreateUserDto) {
         const user = await this.validateUser(userDto)
+
         return this.generateToken(user)
     }
 
@@ -32,9 +33,10 @@ export class AuthService {
     private async validateUser(userDto: CreateUserDto) {
         const user = await this.userService.getUserByEmail(userDto.email);
         const passwordEquals = await bcrypt.compare(userDto.password, user.password);
-        if (user && passwordEquals) {
-            return user;
+        if (!user || !passwordEquals) {
+            throw new UnauthorizedException({message: 'Email or password is wrong!'})
         }
-        throw new UnauthorizedException({message: 'Email or password is wrong!'})
+
+        return user;
     }
 }
